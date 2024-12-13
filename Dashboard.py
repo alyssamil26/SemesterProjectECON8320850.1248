@@ -3,7 +3,7 @@
 
 
 #%%
-pip install streamlit requests pandas matplotlib
+#pip install streamlit requests pandas matplotlib
 #%%
 #SetUpBLSAPI
 
