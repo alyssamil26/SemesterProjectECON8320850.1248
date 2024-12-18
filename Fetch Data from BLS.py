@@ -56,49 +56,49 @@ def process_bls_data(raw_data):
     )
     return combined_data
 
-# Function to save data to CSV (with appending capability)
-def save_data_to_csv(data, file_name="bls_data.csv"):
-    if os.path.exists(file_name):
-        # Load existing data and append new data
-        existing_data = pd.read_csv(file_name)
-        data = pd.concat([existing_data, data]).drop_duplicates(subset=["series_id", "date"]).reset_index(drop=True)
-    data.to_csv(file_name, index=False)
-    st.success(f"Data saved to {file_name}")
-    return file_name
+# Function to save data to GitHub
+def save_data_to_github(data, repo_name, file_path, commit_message, github_token):
+    from io import StringIO
 
-# Main Streamlit app
-def main():
-    st.title("BLS Labor Statistics Dashboard")
+    # Convert DataFrame to CSV string
+    csv_buffer = StringIO()
+    data.to_csv(csv_buffer, index=False)
+    csv_content = csv_buffer.getvalue()
 
-    # Load API key
-    api_key = st.text_input("Enter your BLS API Key", type="password")
+    # Authenticate with GitHub
+    g = Github(github_token)
+    repo = g.get_user().get_repo(repo_name)
 
-    # Specify series IDs and data range
-    series_ids = st.text_input("Enter BLS Series IDs (comma-separated)", "CES0000000001,LNS14000000").split(",")
-    start_year = st.number_input("Start Year", min_value=2000, max_value=datetime.now().year, value=datetime.now().year - 1)
-    end_year = st.number_input("End Year", min_value=2000, max_value=datetime.now().year, value=datetime.now().year)
+    try:
+        # Check if file exists
+        file = repo.get_contents(file_path)
+        # Update the file
+        repo.update_file(
+            file_path, commit_message, csv_content, file.sha
+        )
+        print(f"Updated file: {file_path} in repo: {repo_name}")
+    except Exception:
+        # Create a new file
+        repo.create_file(file_path, commit_message, csv_content)
+        print(f"Created new file: {file_path} in repo: {repo_name}")
 
-    if st.button("Fetch and Save Data"):
+if __name__ == "__main__":
+    # Example usage
+
+    github_token = "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"  # Personal Access Token from GitHub
+    repo_name = "SemesterProjectECON8320850.1248"  # Replace with your GitHub repo name
+    file_path = "data/bls_data.csv"  # Path in the repository
+    commit_message = "Update BLS data"
+
+    series_ids = ["CES0000000001", "LNS14000000"]
+    start_year = 2022
+    end_year = 2023
+
+    try:
         raw_data = fetch_bls_data(series_ids, start_year, end_year, api_key)
+        processed_data = process_bls_data(raw_data)
+        save_data_to_github(processed_data, repo_name, file_path, commit_message, github_token)
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
-        if raw_data and "Results" in raw_data:
-            processed_data = process_bls_data(raw_data)
-
-            st.write("### Raw Data")
-            st.write(processed_data)
-
-            # Save data to CSV
-            file_name = save_data_to_csv(processed_data)
-
-            st.write(f"Data saved to `{file_name}`. Please commit this file to your GitHub repository.")
-
-            # Create visualizations
-            st.write("### Visualizations")
-            for series_id in series_ids:
-                series_data = processed_data[processed_data["series_id"] == series_id]
-
-                if not series_data.empty:
-                    st.line_chart(series_data.set_index("date")["value"])
-                else:
-                    st.warning(f"No data available for Series ID: {series_id}")
 
