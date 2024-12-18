@@ -84,7 +84,7 @@ def save_data_to_github(data, repo_name, file_path, commit_message, github_token
 
 if __name__ == "__main__":
     # Example usage
-
+    api_key = "72bd5ec7070048a99f4892a5b9221399"
     github_token = "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"  # Personal Access Token from GitHub
     repo_name = "SemesterProjectECON8320850.1248"  # Replace with your GitHub repo name
     file_path = "data/bls_data.csv"  # Path in the repository
