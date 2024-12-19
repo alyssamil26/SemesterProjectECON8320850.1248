@@ -16,7 +16,7 @@ def load_data(csv_file):
     try:
         # Mapping of series IDs to their descriptive names
         series_mapping = {
-            "CEU0000000001": "Total Non-Farm Workers",
+            "CES0000000001": "Total Non-Farm Workers",
             "LNS14000000": "Unemployment Rates",
             "LNS12000000": "Civilian Employment (Seasonally Adjusted)",
             "CES0500000003": "Total Private Average Hourly Earnings of All Employees (Seasonally Adjusted)",
@@ -50,16 +50,24 @@ def load_data(csv_file):
 # Step 3: Build the Streamlit Dashboard
 def build_dashboard(data):
     st.title("Labor Statistics Dashboard")
-    st.write("### Data Overview")
 
-    # Ensure 'year' column is displayed as string
-    data['year'] = data['year'].astype(str)
+    st.write("### Data Overview")
     st.dataframe(data)
 
+    st.write("### Series Tables")
+
+    # Create a separate table for each series
+    for series_name in data['series_id'].unique():
+        st.write(f"#### {series_name}")
+        series_data = data[data['series_id'] == series_name]
+        st.dataframe(series_data)
+
     st.write("### Visualizations")
-    for series_id in data['series_id'].unique():
-        series_data = data[data['series_id'] == series_id]
-        st.write(f"#### Series ID: {series_id}")
+
+    # Line charts for each series
+    for series_name in data['series_id'].unique():
+        series_data = data[data['series_id'] == series_name]
+        st.write(f"#### {series_name}")
         st.line_chart(series_data.set_index('date')['value'])
         
 # Main Streamlit App
