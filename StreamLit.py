@@ -54,10 +54,6 @@ def load_data(csv_file):
         if 'period' in data.columns:
             data.drop(columns=['period'], inplace=True)
 
-        # Drop the 'latest' column
-        if 'latest' in data.columns:
-            data.drop(columns=['period'], inplace=True)
-
         # Rename the 'periodName' column to 'Month'
         if 'periodName' in data.columns:
             data.rename(columns={'periodName': 'Month'}, inplace=True)
