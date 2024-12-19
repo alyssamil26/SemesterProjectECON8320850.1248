@@ -1,15 +1,32 @@
 import subprocess
 import pandas as pd
 import streamlit as st
+import os
 
 # Step 1: Run the Fetch Data from BLS script
 def update_csv():
     try:
-        # Execute the "Fetch Data from BLS.py" script
-        subprocess.run(["python", "Fetch Data from BLS.py"], check=True)
-        st.success("CSV file updated successfully!")
+        # Define repository and script details
+        repo_url = "https://github.com/alyssamil26/SemesterProjectECON8320850.1248.git"
+        repo_dir = "SemesterProjectECON8320850.1248"  # Local directory name for the repo
+        script_name = "Fetch Data from BLS.py"
+
+        # Clone the repository if it doesn't exist, or pull the latest changes
+        if not os.path.exists(repo_dir):
+            subprocess.run(["git", "clone", repo_url], check=True)
+        else:
+            subprocess.run(["git", "-C", repo_dir, "pull"], check=True)
+
+        # Construct the path to the script
+        script_path = os.path.join(repo_dir, script_name)
+
+        # Run the script
+        subprocess.run(["python", script_path], check=True)
+
+        st.success("CSV file updated successfully from GitHub!")
     except subprocess.CalledProcessError as e:
         st.error(f"Error running Fetch Data from BLS script: {e}")
+
 
 # Step 2: Load the CSV file from the repository
 def load_data(csv_file):
