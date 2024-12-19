@@ -4,7 +4,7 @@ name: Fetch BLS Data
 on:
   schedule:
     - cron: "0 0 15 * *"
-workflow_dispatch:       # Allows manual triggering of the workflow
+  workflow_dispatch:       # Allows manual triggering of the workflow
 
 # Workflow jobs
 jobs:
