@@ -67,3 +67,20 @@ def build_dashboard(data):
         st.write(f"#### {series_name}")
         st.line_chart(series_data.set_index('date')['value'])
 
+# Main function to coordinate the Streamlit app
+def main():
+    st.sidebar.title("Options")
+    csv_file = "data/bls_data.csv"  # Path to your CSV file
+
+    # Button to update the CSV file
+    if st.sidebar.button("Update CSV"):
+        update_csv()
+
+    # Load and display data
+    data = load_data(csv_file)
+    if data is not None:
+        build_dashboard(data)
+
+# Entry point for the script
+if __name__ == "__main__":
+    main()
