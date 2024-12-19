@@ -33,12 +33,12 @@ def load_data(csv_file):
     try:
         # Mapping of series IDs to their descriptive names
         series_mapping = {
-            "CES0000000001": "Total Non-Farm Workers",
-            "LNS14000000": "Unemployment Rates",
-            "LNS12000000": "Civilian Employment (Seasonally Adjusted)",
-            "CES0500000003": "Total Private Average Hourly Earnings of All Employees (Seasonally Adjusted)",
-            "CES0500000008": "Total Private Average Hourly Earnings of Prod. and Nonsup. Employees (Seasonally Adjusted)",
-            "SMS31000000000000001": "Nebraska, Total Nonfarm (Seasonally Adjusted)"
+            "CES0000000001": "Total Non-Farm Workers (In Thousands)",
+            "LNS14000000": "Unemployment Rates (%)",
+            "LNS12000000": "Civilian Employment (Seasonally Adjusted) (In Thousands)",
+            "CES0500000003": "Total Private Average Hourly Earnings of All Employees (Seasonally Adjusted) ($)",
+            "CES0500000008": "Total Private Average Hourly Earnings of Prod. and Nonsup. Employees (Seasonally Adjusted) ($)",
+            "SMS31000000000000001": "Nebraska, Total Nonfarm (Seasonally Adjusted) (In Thousands)"
         }
 
         # Load the CSV
