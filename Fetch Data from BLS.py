@@ -14,7 +14,7 @@ def fetch_bls_data(series_ids, start_year, end_year, api_key):
         "seriesid": series_ids,
         "startyear": str(start_year),
         "endyear": str(end_year),
-        "registrationkey": api_key,  # Use the api_key passed to the function
+        "registrationkey": api_key,
     }
 
     response = requests.post(url, headers=headers, data=json.dumps(payload))
@@ -45,7 +45,7 @@ def process_bls_data(raw_data):
         data_frames.append(series_data)
 
     combined_data = pd.concat(data_frames)
-    combined_data["date"] = pd.to_datetime(combined_data["date"])  # Ensure final parsing
+    combined_data["date"] = pd.to_datetime(combined_data["date"])
     return combined_data
 
 
@@ -76,11 +76,11 @@ def save_data_to_github(data, repo_name, file_path, commit_message, github_token
         print(f"Created new file: {file_path} in repo: {repo_name}")
 
 if __name__ == "__main__":
-    # Example usage
-    api_key = "ba188c33045d4c419c06b6de6849fb86"  # Replace with your actual BLS API key
-    github_token = "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"  # Replace with your GitHub token
-    repo_name = "SemesterProjectECON8320850.1248"  # Replace with your GitHub repo name
-    file_path = "data/bls_data.csv"  # Path in the repository
+    # Keys, Tokens, and Repo Paths
+    api_key = "ba188c33045d4c419c06b6de6849fb86"
+    github_token = "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"
+    repo_name = "SemesterProjectECON8320850.1248"
+    file_path = "data/bls_data.csv"
     commit_message = "Update BLS data"
 
     series_ids = [
@@ -95,7 +95,6 @@ if __name__ == "__main__":
     end_year = 2024  # Replace with your desired end year
 
     try:
-        # Pass the API key when calling the function
         raw_data = fetch_bls_data(series_ids, start_year, end_year, api_key)
         processed_data = process_bls_data(raw_data)
         save_data_to_github(processed_data, repo_name, file_path, commit_message, github_token)

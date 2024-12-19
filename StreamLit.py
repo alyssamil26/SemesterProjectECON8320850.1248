@@ -6,7 +6,7 @@ import os
 # Step 1: Run the Fetch Data from BLS script
 def update_csv():
     try:
-        # Define repository and script details
+        # Repository and script details
         repo_url = "https://github.com/alyssamil26/SemesterProjectECON8320850.1248.git"
         repo_dir = "SemesterProjectECON8320850.1248"  # Local directory name for the repo
         script_name = "Fetch Data from BLS.py"
@@ -54,6 +54,10 @@ def load_data(csv_file):
         if 'period' in data.columns:
             data.drop(columns=['period'], inplace=True)
 
+        # Drop the 'latest' column
+         if 'latest' in data.columns:
+            data.drop(columns=['period'], inplace=True)
+
         # Rename the 'periodName' column to 'Month'
         if 'periodName' in data.columns:
             data.rename(columns={'periodName': 'Month'}, inplace=True)
@@ -92,10 +96,6 @@ def build_dashboard(data):
 def main():
     st.sidebar.title("Options")
     csv_file = "data/bls_data.csv"  # Path to your CSV file
-
-    # Button to update the CSV file
-    if st.sidebar.button("Update CSV"):
-        update_csv()
 
     # Load and display data
     data = load_data(csv_file)
