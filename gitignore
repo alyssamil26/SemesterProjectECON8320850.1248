@@ -1,0 +1,37 @@
+# Byte-compiled files
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual environments
+venv/
+.env/
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Python IDE files
+.vscode/
+.idea/
+
+# Streamlit-specific files
+.streamlit/config.toml
+.streamlit/secrets.toml
+
+# CSV files (if generated locally and not pushed to GitHub)
+*.csv
+
+# Sensitive files
+secrets.py
+.env
+
+# Jupyter Notebook checkpoints (if applicable)
+.ipynb_checkpoints/
+
+# Large files
+*.bak
+*.swp
