@@ -3,58 +3,51 @@ import requests
 import json
 import os
 from datetime import datetime
+from github import Github
 
 # Function to fetch data from BLS API/website
 def fetch_bls_data(series_ids, start_year, end_year, api_key):
     url = "https://api.bls.gov/publicAPI/v2/timeseries/data/"
     headers = {"Content-Type": "application/json"}
-    api_key = "72bd5ec7070048a99f4892a5b9221399"
-
-    series_ids = [
-        "CEU0000000001",  # Total Non-Farm Workers
-        "LNS14000000",  # Unemployment Rates
-        "LNS12000000",  # Civilian Employment (Seasonally Adjusted)
-        "CES0500000003",  # Total Private Average Hourly Earnings of All Employees - Seasonally Adjusted
-        "CES0500000008",  # Total Private Average Hourly Earnings of Prod. and Nonsup. Employees - Seasonally Adjusted
-        "SMS31000000000000001",  # Nebraska, Total Nonfarm, Seasonally adjusted
-    ]
 
     payload = {
         "seriesid": series_ids,
         "startyear": str(start_year),
         "endyear": str(end_year),
-        "registrationkey": api_key,
+        "registrationkey": api_key,  # Use the api_key passed to the function
     }
 
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
     if response.status_code == 200:
         data = response.json()
-        if "Results" in data:
-            return data["Results"]["series"][0]["data"]
+        print("API Response:", data)  # Debugging line to see the full response
+        if "Results" in data and "series" in data["Results"]:
+            return data["Results"]
         else:
-            print(f"No data found for series: {series_id}")
-            return []
+            raise ValueError(f"No valid data returned from the BLS API. Response: {data}")
     else:
-        print(f"Error fetching data. Please try again later.")
-        return None
+        raise Exception(f"Error fetching data: {response.status_code} - {response.text}")
 
-# Function to process BLS data
+#Process BLS Data
 def process_bls_data(raw_data):
     data_frames = []
-    for series in raw_data["Results"]["series"]:
+    for series in raw_data["series"]:  # Access series directly from the results
         series_id = series["seriesID"]
         series_data = pd.DataFrame(series["data"])
         series_data["series_id"] = series_id
-        series_data["value"] = pd.to_numeric(series_data["value"], errors='coerce')
-        series_data["year"] = pd.to_numeric(series_data["year"], errors='coerce')
+        series_data["value"] = pd.to_numeric(series_data["value"], errors="coerce")
+        series_data["year"] = pd.to_numeric(series_data["year"], errors="coerce")
+        # Create a valid date string in the format YYYY-MM-DD
+        series_data["date"] = series_data["year"].astype(str) + "-" + pd.to_datetime(
+            series_data["periodName"], format="%B", errors="coerce"
+        ).dt.month.astype(str).str.zfill(2) + "-01"
         data_frames.append(series_data)
 
     combined_data = pd.concat(data_frames)
-    combined_data["date"] = pd.to_datetime(
-        combined_data["year"].astype(str) + combined_data["periodName"]
-    )
+    combined_data["date"] = pd.to_datetime(combined_data["date"])  # Ensure final parsing
     return combined_data
+
 
 # Function to save data to GitHub
 def save_data_to_github(data, repo_name, file_path, commit_message, github_token):
@@ -84,21 +77,27 @@ def save_data_to_github(data, repo_name, file_path, commit_message, github_token
 
 if __name__ == "__main__":
     # Example usage
-    api_key = "72bd5ec7070048a99f4892a5b9221399"
-    github_token = "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"  # Personal Access Token from GitHub
+    api_key = "ba188c33045d4c419c06b6de6849fb86"  # Replace with your actual BLS API key
+    github_token = "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"  # Replace with your GitHub token
     repo_name = "SemesterProjectECON8320850.1248"  # Replace with your GitHub repo name
     file_path = "data/bls_data.csv"  # Path in the repository
     commit_message = "Update BLS data"
 
-    series_ids = ["CES0000000001", "LNS14000000"]
-    start_year = 2022
-    end_year = 2023
+    series_ids = [
+        "CES0000000001",  # Total Non-Farm Workers
+        "LNS14000000",  # Unemployment Rates
+        "LNS12000000",  # Civilian Employment (Seasonally Adjusted)
+        "CES0500000003",  # Total Private Average Hourly Earnings of All Employees (Seasonally Adjusted)
+        "CES0500000008",  # Total Private Average Hourly Earnings of Prod. and Nonsup. Employees (Seasonally Adjusted)
+        "SMS31000000000000001"  # Nebraska, Total Nonfarm (Seasonally Adjusted)
+    ]
+    start_year = 2022  # Replace with your desired start year
+    end_year = 2024  # Replace with your desired end year
 
     try:
+        # Pass the API key when calling the function
         raw_data = fetch_bls_data(series_ids, start_year, end_year, api_key)
         processed_data = process_bls_data(raw_data)
         save_data_to_github(processed_data, repo_name, file_path, commit_message, github_token)
     except Exception as e:
         print(f"An error occurred: {e}")
-
-
