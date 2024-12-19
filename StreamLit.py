@@ -14,9 +14,34 @@ def update_csv():
 # Step 2: Load the CSV file from the repository
 def load_data(csv_file):
     try:
+        # Mapping of series IDs to their descriptive names
+        series_mapping = {
+            "CEU0000000001": "Total Non-Farm Workers",
+            "LNS14000000": "Unemployment Rates",
+            "LNS12000000": "Civilian Employment (Seasonally Adjusted)",
+            "CES0500000003": "Total Private Average Hourly Earnings of All Employees (Seasonally Adjusted)",
+            "CES0500000008": "Total Private Average Hourly Earnings of Prod. and Nonsup. Employees (Seasonally Adjusted)",
+            "SMS31000000000000001": "Nebraska, Total Nonfarm (Seasonally Adjusted)"
+        }
+
+        # Load the CSV
         data = pd.read_csv(csv_file)
+
         # Convert 'year' column to string to avoid comma formatting
         data['year'] = data['year'].astype(str)
+
+        # Drop the 'period' column
+        if 'period' in data.columns:
+            data.drop(columns=['period'], inplace=True)
+
+        # Rename the 'periodName' column to 'Month'
+        if 'periodName' in data.columns:
+            data.rename(columns={'periodName': 'Month'}, inplace=True)
+
+        # Replace series_id with descriptive names
+        if 'series_id' in data.columns:
+            data['series_id'] = data['series_id'].replace(series_mapping)
+
         return data
     except FileNotFoundError:
         st.error(f"CSV file {csv_file} not found. Please update the data first.")
