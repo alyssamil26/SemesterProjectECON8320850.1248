@@ -67,6 +67,3 @@ def build_dashboard(data):
         st.write(f"#### {series_name}")
         st.line_chart(series_data.set_index('date')['value'])
 
-
-if __name__ == "__main__":
-    main()
