@@ -44,6 +44,9 @@ def load_data(csv_file):
         # Load the CSV
         data = pd.read_csv(csv_file)
 
+        # Drop duplicates
+        data = data.drop_duplicates()
+
         # Convert 'year' column to string to avoid comma formatting
         data['year'] = data['year'].astype(str)
 
@@ -63,6 +66,7 @@ def load_data(csv_file):
     except FileNotFoundError:
         st.error(f"CSV file {csv_file} not found. Please update the data first.")
         return None
+
 
 # Step 3: Build the Streamlit Dashboard
 def build_dashboard(data):
