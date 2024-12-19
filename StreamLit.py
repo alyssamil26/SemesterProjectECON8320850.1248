@@ -72,6 +72,10 @@ def load_data(csv_file):
 def build_dashboard(data):
     st.title("Labor Statistics Dashboard")
 
+    # Drop the 'latest' column if it exists
+    if 'latest' in data.columns:
+        data = data.drop(columns=['latest'])
+
     st.write("### Series Tables")
 
     # Create a separate table for each series without 'footnotes'
@@ -90,7 +94,7 @@ def build_dashboard(data):
 
 # Main function to coordinate the Streamlit app
 def main():
-    st.sidebar.title("Options")
+    st.sidebar.title("Data from the U.S. Bureau of Labor Statistics")
     csv_file = "data/bls_data.csv"  # Path to your CSV file
 
     # Load and display data
