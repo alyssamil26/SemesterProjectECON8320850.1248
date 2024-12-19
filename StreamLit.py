@@ -15,6 +15,8 @@ def update_csv():
 def load_data(csv_file):
     try:
         data = pd.read_csv(csv_file)
+        # Convert 'year' column to string to avoid comma formatting
+        data['year'] = data['year'].astype(str)
         return data
     except FileNotFoundError:
         st.error(f"CSV file {csv_file} not found. Please update the data first.")
@@ -24,16 +26,17 @@ def load_data(csv_file):
 def build_dashboard(data):
     st.title("Labor Statistics Dashboard")
     st.write("### Data Overview")
+
+    # Ensure 'year' column is displayed as string
+    data['year'] = data['year'].astype(str)
     st.dataframe(data)
 
     st.write("### Visualizations")
-
-    # Line Chart of Values
     for series_id in data['series_id'].unique():
         series_data = data[data['series_id'] == series_id]
         st.write(f"#### Series ID: {series_id}")
         st.line_chart(series_data.set_index('date')['value'])
-
+        
 # Main Streamlit App
 def main():
     st.sidebar.title("Options")
